@@ -1,0 +1,7 @@
+{
+  "name": "FACT CHECKER-AI",
+  "description": "An AI-powered application to verify claims, analyze images, detect logical fallacies, and trace the origin of misinformation. Uses Gemini for comprehensive analysis.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
