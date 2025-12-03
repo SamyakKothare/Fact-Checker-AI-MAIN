@@ -587,18 +587,20 @@ const App: React.FC = () => {
             </main>
             
             {/* --- Footer --- */}
-            <Footer 
-                onTrustedSourcesClick={() => setShowTrustedSources(true)} 
-                onPricingClick={() => setShowPricing(true)}
-                onAboutUsClick={() => setShowAboutUs(true)}
-                onCareersClick={() => setShowCareers(true)}
-                onTechnologyClick={() => setShowTechnology(true)}
-                onApiDocsClick={() => setShowApiDocs(true)}
-                onLiveAnalysisClick={() => setShowLiveAnalysis(true)}
-                onMediaCasesClick={() => setShowMediaCases(true)}
-                onDefenceCasesClick={() => setShowDefenceCases(true)}
-                onGovernmentCasesClick={() => setShowGovernmentCases(true)}
-            />
+            <div className="border-t border-white/10 relative z-10">
+                <Footer 
+                    onTrustedSourcesClick={() => setShowTrustedSources(true)} 
+                    onPricingClick={() => setShowPricing(true)}
+                    onAboutUsClick={() => setShowAboutUs(true)}
+                    onCareersClick={() => setShowCareers(true)}
+                    onTechnologyClick={() => setShowTechnology(true)}
+                    onApiDocsClick={() => setShowApiDocs(true)}
+                    onLiveAnalysisClick={() => setShowLiveAnalysis(true)}
+                    onMediaCasesClick={() => setShowMediaCases(true)}
+                    onDefenceCasesClick={() => setShowDefenceCases(true)}
+                    onGovernmentCasesClick={() => setShowGovernmentCases(true)}
+                />
+            </div>
         </div>
       </div>
     </div>

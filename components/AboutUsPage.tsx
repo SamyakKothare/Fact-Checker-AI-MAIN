@@ -57,32 +57,32 @@ const AboutUsPage: React.FC<AboutUsPageProps> = ({ onBack }) => {
             <h2 className="text-2xl font-bold text-white mb-6">How We Developed This Web-App</h2>
             <div className="space-y-6 text-gray-300">
               <p>
-                Fact Checker AI is built on the cutting edge of modern web technology. It leverages the immense capabilities of the <strong>Google Gemini API</strong> (specifically the Gemini 2.5 Flash model) to perform complex multi-modal reasoning.
+                Fact Checker AI is built on the cutting edge of modern web technology. It leverages the immense capabilities of <strong>Advanced Generative AI</strong> to perform complex multi-modal reasoning.
               </p>
               
               <ul className="grid md:grid-cols-2 gap-4">
                 <li className="flex items-start gap-3">
                   <span className="text-[#f5c14b] mt-1">⚡</span>
                   <div>
-                    <strong>Gemini 2.5 Flash:</strong> The core brain of the operation, allowing for ultra-fast text analysis, scam detection, and logical fallacy identification.
+                    <strong>Advanced AI Models:</strong> The core brain of the operation, allowing for ultra-fast text analysis, scam detection, and logical fallacy identification.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#f5c14b] mt-1">⚛️</span>
                   <div>
-                    <strong>React 19 & TypeScript:</strong> Built for performance and type safety, ensuring a smooth, responsive, and bug-free user experience.
+                    <strong>Modern Frontend Architecture:</strong> Built for performance and reliability, ensuring a smooth, responsive, and accessible user experience.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#f5c14b] mt-1">🎨</span>
                   <div>
-                    <strong>Tailwind CSS:</strong> A utility-first CSS framework that allowed us to craft a bespoke, accessible, and responsive dark-themed UI.
+                    <strong>Responsive Design System:</strong> A utility-first approach that allowed us to craft a bespoke, immersive dark-themed UI that works on any device.
                   </div>
                 </li>
                 <li className="flex items-start gap-3">
                   <span className="text-[#f5c14b] mt-1">🎙️</span>
                   <div>
-                    <strong>Gemini Live API:</strong> We utilize WebSockets and the Web Audio API to enable real-time, low-latency voice interaction directly in the browser.
+                    <strong>Real-Time Audio Processing:</strong> We utilize secure WebSocket connections to enable low-latency voice interaction directly in the browser.
                   </div>
                 </li>
               </ul>
