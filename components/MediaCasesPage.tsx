@@ -30,21 +30,24 @@ const MediaCasesPage: React.FC<MediaCasesPageProps> = ({ onBack }) => {
                     <li className="flex items-center gap-2"><span className="text-red-500">×</span> Public trust in media at historic lows</li>
                 </ul>
             </div>
-            <div className="bg-[#10111a] p-8 rounded-xl border border-white/10 shadow-lg">
+            <div className="bg-[#10111a] p-8 rounded-xl border border-white/10 shadow-lg relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-purple-600/80 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg backdrop-blur-sm">
+                    FUTURE BETA
+                </div>
                 <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-2xl">📰</div>
+                    <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center text-2xl">🎥</div>
                     <div>
-                        <h3 className="font-bold text-white">Case Study: Global News Corp</h3>
-                        <p className="text-xs text-gray-500">Election Coverage 2024</p>
+                        <h3 className="font-bold text-white">Coming Soon: Video Verification</h3>
+                        <p className="text-xs text-gray-500">Automated Frame Analysis</p>
                     </div>
                 </div>
                 <p className="text-gray-400 text-sm italic mb-4">
-                    "Fact Checker AI allowed our desk to verify viewer-submitted videos in real-time during the broadcast. What used to take a team of 3 researchers an hour was done in 45 seconds."
+                    "We are actively developing a video verification engine. This future beta feature aims to verify viewer-submitted clips in near real-time, detecting deepfake artifacts and inconsistencies frame-by-frame."
                 </p>
-                <div className="h-1 bg-gray-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-green-500 w-3/4"></div>
+                <div className="w-full bg-gray-800 rounded-full h-1.5 mb-1 overflow-hidden">
+                    <div className="bg-purple-500 h-1.5 rounded-full animate-pulse" style={{ width: '45%' }}></div>
                 </div>
-                <p className="text-right text-xs text-green-400 mt-1">80% Efficiency Gain</p>
+                <p className="text-right text-xs text-purple-400">In Development</p>
             </div>
         </div>
 

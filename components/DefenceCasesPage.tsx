@@ -18,15 +18,22 @@ const DefenceCasesPage: React.FC<DefenceCasesPageProps> = ({ onBack }) => {
            </div>
         </header>
 
-        <div className="bg-gradient-to-r from-blue-900/20 to-transparent p-8 rounded-xl border border-blue-900/30 mb-12">
-            <h2 className="text-2xl font-bold text-white mb-4">Information Warfare</h2>
-            <p className="text-gray-300 leading-relaxed max-w-3xl">
-                In modern hybrid warfare, information is a weapon. Adversaries use coordinated disinformation campaigns (botnets, deepfakes, narrative laundering) to destabilize societies. Fact Checker AI provides defence analysts with the tools to detect, track, and counter these threats.
+        <div className="bg-gradient-to-r from-blue-900/20 to-transparent p-8 rounded-xl border border-blue-900/30 mb-12 relative overflow-hidden">
+            <div className="absolute top-0 right-0 bg-blue-600/80 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg backdrop-blur-sm">
+                FUTURE BETA
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-4">Information Warfare Defense</h2>
+            <p className="text-gray-300 leading-relaxed max-w-3xl mb-6">
+                In modern hybrid warfare, information is a weapon. We are actively developing a dedicated <strong>Cognitive Security Suite</strong> to help defence analysts detect, track, and counter coordinated disinformation campaigns (botnets, deepfakes, narrative laundering) before they destabilize societies.
             </p>
+            <div className="w-full max-w-md bg-gray-800 rounded-full h-1.5 mb-2 overflow-hidden">
+                <div className="bg-blue-500 h-1.5 rounded-full animate-pulse" style={{ width: '35%' }}></div>
+            </div>
+            <p className="text-xs text-blue-400">System Architecture In Progress</p>
         </div>
 
         <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-[#10111a] p-6 rounded-xl border border-white/10">
+            <div className="bg-[#10111a] p-6 rounded-xl border border-white/10 opacity-75">
                 <div className="w-10 h-10 bg-red-900/20 rounded flex items-center justify-center text-red-400 mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                 </div>
@@ -36,7 +43,7 @@ const DefenceCasesPage: React.FC<DefenceCasesPageProps> = ({ onBack }) => {
                 </p>
             </div>
 
-            <div className="bg-[#10111a] p-6 rounded-xl border border-white/10">
+            <div className="bg-[#10111a] p-6 rounded-xl border border-white/10 opacity-75">
                 <div className="w-10 h-10 bg-yellow-900/20 rounded flex items-center justify-center text-yellow-400 mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
                 </div>
