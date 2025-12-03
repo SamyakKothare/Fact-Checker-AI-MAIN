@@ -594,12 +594,19 @@
           min-width: 0; /* Allow flex shrinking */
           transition: flex 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease, border-color 0.4s ease;
         }
+        
+        /* Ensure text color transitions smoothly */
+        .lp-feature-card h3, .lp-faq-item h3,
+        .lp-feature-card p, .lp-faq-item p {
+            transition: color 0.3s ease, text-shadow 0.3s ease;
+        }
 
         /* Container Hover: Dim siblings */
         .lp-feature-grid:hover .lp-feature-card,
         .lp-faq-grid:hover .lp-faq-item {
-          opacity: 0.5;
+          opacity: 0.4; /* Make siblings slightly more faded to enhance contrast */
           flex: 0.5; /* Shrink others significantly */
+          filter: grayscale(0.5); /* Optional: desaturate siblings */
         }
 
         /* Card Hover: Expand and Highlight */
@@ -611,6 +618,20 @@
           box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7);
           border-color: var(--accent);
           z-index: 10;
+          filter: grayscale(0);
+        }
+        
+        /* Brighten text on hover to pure white */
+        .lp-feature-card:hover h3,
+        .lp-faq-item:hover h3 {
+            color: #ffffff;
+            text-shadow: 0 0 1px rgba(255,255,255,0.5); /* Subtle crispness */
+        }
+        
+        .lp-feature-card:hover p,
+        .lp-faq-item:hover p {
+            color: #ffffff;
+            opacity: 1;
         }
       }
 

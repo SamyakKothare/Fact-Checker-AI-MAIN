@@ -21,6 +21,8 @@ import LiveAnalysisPage from './components/LiveAnalysisPage';
 import MediaCasesPage from './components/MediaCasesPage';
 import DefenceCasesPage from './components/DefenceCasesPage';
 import GovernmentCasesPage from './components/GovernmentCasesPage';
+import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import TermsPage from './components/TermsPage';
 
 // Infer LiveSession type as it is not exported directly by the package
 type LiveSession = Awaited<ReturnType<GoogleGenAI['live']['connect']>>;
@@ -90,6 +92,8 @@ const App: React.FC = () => {
   const [showMediaCases, setShowMediaCases] = useState<boolean>(false);
   const [showDefenceCases, setShowDefenceCases] = useState<boolean>(false);
   const [showGovernmentCases, setShowGovernmentCases] = useState<boolean>(false);
+  const [showPrivacy, setShowPrivacy] = useState<boolean>(false);
+  const [showTerms, setShowTerms] = useState<boolean>(false);
   
   const [activeTool, setActiveTool] = useState<Tool>('fact-check');
   
@@ -363,6 +367,8 @@ const App: React.FC = () => {
   if (showMediaCases) return <MediaCasesPage onBack={() => setShowMediaCases(false)} />;
   if (showDefenceCases) return <DefenceCasesPage onBack={() => setShowDefenceCases(false)} />;
   if (showGovernmentCases) return <GovernmentCasesPage onBack={() => setShowGovernmentCases(false)} />;
+  if (showPrivacy) return <PrivacyPolicyPage onBack={() => setShowPrivacy(false)} />;
+  if (showTerms) return <TermsPage onBack={() => setShowTerms(false)} />;
 
   if (showLanding) {
     return (
@@ -378,6 +384,8 @@ const App: React.FC = () => {
         onMediaCasesClick={() => setShowMediaCases(true)}
         onDefenceCasesClick={() => setShowDefenceCases(true)}
         onGovernmentCasesClick={() => setShowGovernmentCases(true)}
+        onPrivacyClick={() => setShowPrivacy(true)}
+        onTermsClick={() => setShowTerms(true)}
       />
     );
   }
@@ -599,6 +607,8 @@ const App: React.FC = () => {
                     onMediaCasesClick={() => setShowMediaCases(true)}
                     onDefenceCasesClick={() => setShowDefenceCases(true)}
                     onGovernmentCasesClick={() => setShowGovernmentCases(true)}
+                    onPrivacyClick={() => setShowPrivacy(true)}
+                    onTermsClick={() => setShowTerms(true)}
                 />
             </div>
         </div>

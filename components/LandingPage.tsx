@@ -13,6 +13,8 @@ interface LandingPageProps {
   onMediaCasesClick: () => void;
   onDefenceCasesClick: () => void;
   onGovernmentCasesClick: () => void;
+  onPrivacyClick: () => void;
+  onTermsClick: () => void;
 }
 
 const LandingPage: React.FC<LandingPageProps> = ({ 
@@ -26,7 +28,9 @@ const LandingPage: React.FC<LandingPageProps> = ({
     onLiveAnalysisClick,
     onMediaCasesClick,
     onDefenceCasesClick,
-    onGovernmentCasesClick
+    onGovernmentCasesClick,
+    onPrivacyClick,
+    onTermsClick
 }) => {
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -199,6 +203,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
         onMediaCasesClick={onMediaCasesClick}
         onDefenceCasesClick={onDefenceCasesClick}
         onGovernmentCasesClick={onGovernmentCasesClick}
+        onPrivacyClick={onPrivacyClick}
+        onTermsClick={onTermsClick}
       />
     </div>
   );

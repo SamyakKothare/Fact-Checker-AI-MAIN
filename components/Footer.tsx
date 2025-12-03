@@ -29,6 +29,8 @@ interface FooterProps {
   onMediaCasesClick?: () => void;
   onDefenceCasesClick?: () => void;
   onGovernmentCasesClick?: () => void;
+  onPrivacyClick?: () => void;
+  onTermsClick?: () => void;
 }
 
 const Footer: React.FC<FooterProps> = ({ 
@@ -41,7 +43,9 @@ const Footer: React.FC<FooterProps> = ({
     onLiveAnalysisClick,
     onMediaCasesClick,
     onDefenceCasesClick,
-    onGovernmentCasesClick
+    onGovernmentCasesClick,
+    onPrivacyClick,
+    onTermsClick
 }) => {
   return (
     <footer className="fv-footer">
@@ -107,8 +111,8 @@ const Footer: React.FC<FooterProps> = ({
       <div className="fv-footer-bottom">
         <p>© {new Date().getFullYear()} Fact Checker AI. All rights reserved. - Developed by: Samyak Kothare</p>
         <div className="fv-footer-bottom-links">
-          <a href="#">Privacy policy</a>
-          <a href="#">Terms</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); if(onPrivacyClick) onPrivacyClick(); }}>Privacy policy</a>
+          <a href="#" onClick={(e) => { e.preventDefault(); if(onTermsClick) onTermsClick(); }}>Terms</a>
           <a href="https://deepmind.google/technologies/gemini/" target="_blank" rel="noopener noreferrer">Powered by Google Gemini</a>
         </div>
       </div>
