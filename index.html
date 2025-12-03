@@ -566,21 +566,33 @@
         border: 1px solid var(--border-subtle);
         padding: 1.6rem 1.5rem;
         position: relative;
-        overflow: hidden; /* Ensure content doesn't spill during shrink */
+        overflow: hidden;
+        color: var(--text-muted);
+        transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
       }
 
       .lp-feature-card h3,
       .lp-faq-item h3 {
         margin-top: 0;
-        margin-bottom: 0.6rem;
+        margin-bottom: 0.75rem;
+        font-size: 1rem;
+        color: var(--text-main);
       }
 
       .lp-feature-card p,
       .lp-faq-item p {
+        margin: 0;
         color: var(--text-muted);
       }
 
-      /* Desktop Hover Animation Logic */
+      .lp-feature-card:hover, 
+      .lp-faq-item:hover {
+        transform: translateY(-4px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+      }
+
+      /* Desktop Layout */
       @media (min-width: 900px) {
         .lp-feature-grid, 
         .lp-faq-grid {
@@ -591,47 +603,6 @@
         .lp-feature-card, 
         .lp-faq-item {
           flex: 1;
-          min-width: 0; /* Allow flex shrinking */
-          transition: flex 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.4s ease, box-shadow 0.4s ease, opacity 0.4s ease, border-color 0.4s ease;
-        }
-        
-        /* Ensure text color transitions smoothly */
-        .lp-feature-card h3, .lp-faq-item h3,
-        .lp-feature-card p, .lp-faq-item p {
-            transition: color 0.3s ease, text-shadow 0.3s ease;
-        }
-
-        /* Container Hover: Dim siblings */
-        .lp-feature-grid:hover .lp-feature-card,
-        .lp-faq-grid:hover .lp-faq-item {
-          opacity: 0.4; /* Make siblings slightly more faded to enhance contrast */
-          flex: 0.5; /* Shrink others significantly */
-          filter: grayscale(0.5); /* Optional: desaturate siblings */
-        }
-
-        /* Card Hover: Expand and Highlight */
-        .lp-feature-card:hover,
-        .lp-faq-item:hover {
-          opacity: 1;
-          flex: 3.5; /* Greatly increased expansion factor for dramatic focus */
-          transform: translateY(-8px);
-          box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7);
-          border-color: var(--accent);
-          z-index: 10;
-          filter: grayscale(0);
-        }
-        
-        /* Brighten text on hover to pure white */
-        .lp-feature-card:hover h3,
-        .lp-faq-item:hover h3 {
-            color: #ffffff;
-            text-shadow: 0 0 1px rgba(255,255,255,0.5); /* Subtle crispness */
-        }
-        
-        .lp-feature-card:hover p,
-        .lp-faq-item:hover p {
-            color: #ffffff;
-            opacity: 1;
         }
       }
 
