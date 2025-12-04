@@ -191,3 +191,21 @@ Text to analyze: "${text}"`;
 
     return parseJsonResponse<ScamAnalysis>(response);
 };
+
+export const transcribeAudio = async (audioBase64: string, mimeType: string): Promise<string> => {
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash",
+    contents: {
+      parts: [
+        {
+          inlineData: {
+            mimeType: mimeType,
+            data: audioBase64
+          }
+        },
+        { text: "Transcribe the audio exactly as spoken." }
+      ]
+    }
+  });
+  return response.text;
+};

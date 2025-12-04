@@ -1,8 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
-// FIX: Import `Modality` for use in Live API configuration.
-import { GoogleGenAI, Modality } from '@google/genai';
-import type { LiveServerMessage, Blob } from '@google/genai';
-import { checkFact, analyzeFallacies, traceMisinformation, detectScam } from './services/geminiService';
+import { GoogleGenAI } from '@google/genai';
+import { checkFact, analyzeFallacies, traceMisinformation, detectScam, transcribeAudio } from './services/geminiService';
 import type { FullFactCheckResponse, Fallacy, SourceTrace, Source, ScamAnalysis, Tool, HistoryItem } from './types';
 import VerdictCard from './components/VerdictCard';
 import FallacyAnalysisResult from './components/FallacyAnalysisResult';
@@ -23,31 +21,6 @@ import DefenceCasesPage from './components/DefenceCasesPage';
 import GovernmentCasesPage from './components/GovernmentCasesPage';
 import PrivacyPolicyPage from './components/PrivacyPolicyPage';
 import TermsPage from './components/TermsPage';
-
-// Infer LiveSession type as it is not exported directly by the package
-type LiveSession = Awaited<ReturnType<GoogleGenAI['live']['connect']>>;
-
-// --- Helper functions for Gemini Live API ---
-function encode(bytes: Uint8Array): string {
-  let binary = '';
-  const len = bytes.byteLength;
-  for (let i = 0; i < len; i++) {
-    binary += String.fromCharCode(bytes[i]);
-  }
-  return btoa(binary);
-}
-
-function createBlob(data: Float32Array): Blob {
-  const l = data.length;
-  const int16 = new Int16Array(l);
-  for (let i = 0; i < l; i++) {
-    int16[i] = data[i] * 32768;
-  }
-  return {
-    data: encode(new Uint8Array(int16.buffer)),
-    mimeType: 'audio/pcm;rate=16000',
-  };
-}
 
 // --- SVG Icons ---
 const SparkleIcon: React.FC<{className?: string}> = ({className}) => (<svg xmlns="http://www.w3.org/2000/svg" className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5z"/></svg>);
@@ -116,11 +89,9 @@ const App: React.FC = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   
-  // Refs for Gemini Live API
-  const aiRef = useRef<GoogleGenAI | null>(null);
-  const sessionPromiseRef = useRef<Promise<LiveSession> | null>(null);
-  const cleanupRef = useRef<(() => void) | null>(null);
-  const transcriptRef = useRef<string>('');
+  // Refs for audio recording
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<BlobPart[]>([]);
 
   // --- Core Functions ---
   const clearResults = useCallback(() => {
@@ -187,93 +158,57 @@ const App: React.FC = () => {
   const handleVoiceInput = async () => {
     if (isRecording) {
       // Stop recording
-      if (sessionPromiseRef.current) {
-        const session = await sessionPromiseRef.current;
-        session.close(); // This will trigger the onclose callback for cleanup
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+        mediaRecorderRef.current.stop();
+        setIsRecording(false);
       }
       return;
     }
 
     // Start recording
-    setIsRecording(true);
-    setInputText('');
-    transcriptRef.current = '';
-    setError(null);
-
     try {
-      if (!aiRef.current) {
-        aiRef.current = new GoogleGenAI({ apiKey: process.env.API_KEY });
-      }
-      const ai = aiRef.current;
-      
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // FIX: Cast `window` to `any` to resolve TypeScript error for vendor-prefixed `webkitAudioContext`.
-      const inputAudioContext = new ((window as any).AudioContext || (window as any).webkitAudioContext)({ sampleRate: 16000 });
-      const source = inputAudioContext.createMediaStreamSource(stream);
-      const scriptProcessor = inputAudioContext.createScriptProcessor(4096, 1, 1);
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
 
-      scriptProcessor.onaudioprocess = (audioProcessingEvent) => {
-        const inputData = audioProcessingEvent.inputBuffer.getChannelData(0);
-        const pcmBlob = createBlob(inputData);
-        if (sessionPromiseRef.current) {
-          sessionPromiseRef.current.then((session) => {
-            session.sendRealtimeInput({ media: pcmBlob });
-          });
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
         }
       };
 
-      source.connect(scriptProcessor);
-      scriptProcessor.connect(inputAudioContext.destination);
-
-      cleanupRef.current = () => {
-        scriptProcessor.disconnect();
-        source.disconnect();
-        inputAudioContext.close();
+      mediaRecorder.onstop = async () => {
+        // Stop all tracks to release microphone
         stream.getTracks().forEach(track => track.stop());
-      };
-      
-      sessionPromiseRef.current = ai.live.connect({
-        model: 'gemini-2.5-flash-native-audio-preview-09-2025',
-        callbacks: {
-          onopen: () => console.debug('Live session opened.'),
-          onmessage: (message: LiveServerMessage) => {
-            if (message.serverContent?.inputTranscription) {
-              const text = message.serverContent.inputTranscription.text;
-              transcriptRef.current += text;
-              setInputText(transcriptRef.current);
-            }
-          },
-          onerror: (e: ErrorEvent) => {
-            console.error('Live session error:', e);
-            setError(`Voice recognition error: An API or network error occurred.`);
-            if (cleanupRef.current) cleanupRef.current();
-            setIsRecording(false);
-          },
-          onclose: () => {
-            console.debug('Live session closed.');
-            if (cleanupRef.current) {
-              cleanupRef.current();
-              cleanupRef.current = null;
-            }
-            sessionPromiseRef.current = null;
-            setIsRecording(false);
-          },
-        },
-        config: {
-          // FIX: Added `responseModalities` as it's a required parameter for Live API connections.
-          responseModalities: [Modality.AUDIO],
-          inputAudioTranscription: {},
-        },
-      });
 
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+          const base64Audio = (reader.result as string).split(',')[1];
+          // Use mime type from blob or default to audio/webm if undefined
+          const mimeType = audioBlob.type || 'audio/webm';
+          
+          setIsLoading(true);
+          try {
+            const text = await transcribeAudio(base64Audio, mimeType);
+            setInputText(prev => prev + (prev ? ' ' : '') + text);
+          } catch (err) {
+            console.error('Transcription error:', err);
+            setError('Failed to transcribe audio. Please try again.');
+          } finally {
+            setIsLoading(false);
+          }
+        };
+      };
+
+      mediaRecorder.start();
+      setIsRecording(true);
+      setError(null);
     } catch (err) {
-      console.error("Failed to start voice input:", err);
-      setError(err instanceof Error ? `Failed to start microphone: ${err.message}` : 'An unknown error occurred.');
-      setIsRecording(false);
-      if (cleanupRef.current) {
-        cleanupRef.current();
-        cleanupRef.current = null;
-      }
+      console.error("Microphone access denied:", err);
+      setError("Microphone access denied or not supported.");
     }
   };
 
