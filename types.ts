@@ -30,8 +30,9 @@ export interface Fallacy {
 
 export interface GraphNode {
   id: string;
-  type: 'Origin' | 'Amplifier' | 'Source';
+  type: 'Origin' | 'Amplifier' | 'Source' | 'Debunker';
   label: string;
+  role?: string; // Optional: To store original role from AI
 }
 
 export interface GraphLink {

@@ -138,13 +138,21 @@ export const traceMisinformation = async (claim: string): Promise<{response: Sou
 STRICT SEARCH PROTOCOL:
 1. Prioritize findings from these trusted fact-checking and news authorities to identify the origin:
 ${TRUSTED_SOURCES_LIST}
-2. Use these sources to confirm who started it (Origin), who spread it (Amplifiers), and who is debunking or reporting on it (Source).
+2. Use these sources to confirm who started it (Origin), who spread it (Amplifiers), and who is debunking or reporting on it (Source/Debunker).
 3. If no specific trace is found in these distinct sources, broaden to general search.
 
 Respond with ONLY a valid JSON object with three keys: "narrativeSummary", "nodes", and "links".
 - "narrativeSummary": A brief story of how the claim likely originated and spread.
-- "nodes": An array of objects, each with "id", "type" ('Origin', 'Amplifier', 'Source'), "label", and "stance" ('Supporting', 'Disputing', 'Mixed', 'Inconclusive').
-- "links": An array of objects representing connections, each with "source" (id), "target" (id), and "label" (e.g., "cited by").
+- "nodes": An array of objects. Each object MUST have:
+    - "id": unique string id (e.g., "origin1", "node2").
+    - "type": EXACTLY one of 'Origin' (the source of the claim), 'Amplifier' (entities spreading it), or 'Debunker' (fact-checkers/news disputing it).
+    - "label": The name of the entity or source.
+- "links": An array of objects representing connections, each with:
+    - "source": id of the source node.
+    - "target": id of the target node.
+    - "label": (optional) interaction type e.g., "shared by", "debunked by".
+
+Ensure the nodes and links form a logical flow from Origin -> Amplifiers -> Debunkers where possible.
 
 Do not include markdown.
 
