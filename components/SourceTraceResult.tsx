@@ -4,6 +4,7 @@ import SourceLink from './SourceLink';
 import Feedback from './Feedback';
 import DonutChart from './DonutChart';
 import PropagationGraph from './PropagationGraph';
+import TextToSpeechButton from './TextToSpeechButton';
 
 const Section: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
     <div className="mb-8 last:mb-0">
@@ -54,13 +55,16 @@ const SourceTraceResult: React.FC<{ result: SourceTrace; sources: Source[] }> = 
   return (
     <div className="bg-[#10111a] rounded-xl shadow-lg p-6 border border-white/10">
       <div className="mb-8 last:mb-0">
-        <button 
-          onClick={() => setIsNarrativeVisible(!isNarrativeVisible)}
-          className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 border-b border-white/5 pb-2 w-full hover:text-white transition-colors focus:outline-none"
-        >
-          Narrative Summary
-          <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${isNarrativeVisible ? 'rotate-180' : ''}`} />
-        </button>
+        <div className="flex items-center justify-between mb-4 border-b border-white/5 pb-2">
+            <button 
+              onClick={() => setIsNarrativeVisible(!isNarrativeVisible)}
+              className="flex items-center gap-2 text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors focus:outline-none"
+            >
+              Narrative Summary
+              <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${isNarrativeVisible ? 'rotate-180' : ''}`} />
+            </button>
+            <TextToSpeechButton text={result.narrativeSummary} />
+        </div>
         
         {isNarrativeVisible && (
           <div className="bg-[#050509] p-4 rounded-lg border border-white/10 animate-fade-in">

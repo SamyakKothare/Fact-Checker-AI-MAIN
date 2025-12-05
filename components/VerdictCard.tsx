@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { FullFactCheckResponse, Source, Verdict } from '../types';
 import SourceLink from './SourceLink';
 import Feedback from './Feedback';
+import TextToSpeechButton from './TextToSpeechButton';
 
 interface VerdictCardProps {
   result: FullFactCheckResponse;
@@ -64,13 +65,16 @@ const VerdictCard: React.FC<VerdictCardProps> = ({ result, sources }) => {
       )}
 
       <div className="mb-6 last:mb-0">
-        <button 
-          onClick={() => setIsExplanationVisible(!isExplanationVisible)}
-          className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase tracking-wider mb-3 hover:text-white transition-colors focus:outline-none"
-        >
-          Further Explanation
-          <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${isExplanationVisible ? 'rotate-180' : ''}`} />
-        </button>
+        <div className="flex items-center justify-between mb-3">
+            <button 
+              onClick={() => setIsExplanationVisible(!isExplanationVisible)}
+              className="flex items-center gap-2 text-sm font-semibold text-gray-500 uppercase tracking-wider hover:text-white transition-colors focus:outline-none"
+            >
+              Further Explanation
+              <ChevronDownIcon className={`w-4 h-4 transition-transform duration-200 ${isExplanationVisible ? 'rotate-180' : ''}`} />
+            </button>
+            <TextToSpeechButton text={verdict.furtherExplanation} />
+        </div>
         
         {isExplanationVisible && (
           <p className="text-gray-300 text-base leading-relaxed animate-fade-in">{verdict.furtherExplanation}</p>

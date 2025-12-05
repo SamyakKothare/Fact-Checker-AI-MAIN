@@ -15,16 +15,78 @@ const PropagationGraph: React.FC<PropagationGraphProps> = ({ nodes, links }) => 
   useEffect(() => {
     if (!svgRef.current || !containerRef.current || nodes.length === 0) return;
 
+    // 1. Measure Container
     const width = containerRef.current.clientWidth;
-    const height = 500;
-    const nodeWidth = 180;
-    const nodeHeight = 60;
-    const layerSpacing = 150;
-
-    // Clear previous render
+    // Calculate needed height based on depth, or fixed minimum
+    const minHeight = 500;
+    
+    // Clear previous
     d3.select(svgRef.current).selectAll("*").remove();
 
-    // Setup Zoom
+    // 2. Prepare Data (Clone to avoid mutation issues in React Strict Mode)
+    const graphNodes = nodes.map(n => ({ ...n })) as (GraphNode & d3.SimulationNodeDatum)[];
+    const graphLinks = links.map(l => ({ ...l })) as (GraphLink & d3.SimulationLinkDatum<d3.SimulationNodeDatum>)[];
+
+    // 3. Determine Levels (BFS) for Y-positioning
+    // This maps propagation depth to vertical levels as requested
+    const levels = new Map<string, number>();
+    const adjacency: Record<string, string[]> = {};
+    const inDegree: Record<string, number> = {};
+    
+    graphNodes.forEach(n => {
+        levels.set(n.id, 0);
+        adjacency[n.id] = [];
+        inDegree[n.id] = 0;
+    });
+
+    graphLinks.forEach(l => {
+        const src = (l.source as any).id || l.source;
+        const tgt = (l.target as any).id || l.target;
+        if(adjacency[src]) adjacency[src].push(tgt);
+        if(inDegree[tgt] !== undefined) inDegree[tgt]++;
+    });
+
+    // BFS queue
+    const queue: {id: string, depth: number}[] = [];
+    
+    // Find roots (Origin or 0 in-degree)
+    graphNodes.forEach(n => {
+        if (n.type === 'Origin' || inDegree[n.id] === 0) {
+            queue.push({ id: n.id, depth: 0 });
+        }
+    });
+
+    // Fallback if circular
+    if (queue.length === 0 && graphNodes.length > 0) {
+        queue.push({ id: graphNodes[0].id, depth: 0 });
+    }
+
+    const visited = new Set<string>();
+    let maxLevel = 0;
+
+    while(queue.length > 0) {
+        const {id, depth} = queue.shift()!;
+        if (visited.has(id)) continue;
+        visited.add(id);
+        
+        // Update level if deeper path found (Longest Path layering is often better for DAGs)
+        const currentLevel = levels.get(id) || 0;
+        if (depth > currentLevel) {
+            levels.set(id, depth);
+            if (depth > maxLevel) maxLevel = depth;
+        }
+
+        const children = adjacency[id] || [];
+        children.forEach(childId => {
+            queue.push({ id: childId, depth: depth + 1 });
+        });
+    }
+
+    // Dynamic height based on levels
+    const levelHeight = 150;
+    const height = Math.max(minHeight, (maxLevel + 1) * levelHeight + 100);
+
+    // 4. Setup SVG & Zoom
     const svg = d3.select(svgRef.current)
       .attr("width", width)
       .attr("height", height)
@@ -34,260 +96,183 @@ const PropagationGraph: React.FC<PropagationGraphProps> = ({ nodes, links }) => 
     const g = svg.append("g");
 
     const zoom = d3.zoom<SVGSVGElement, unknown>()
-      .scaleExtent([0.1, 4])
-      .on("zoom", (event) => {
-        g.attr("transform", event.transform);
-      });
+      .scaleExtent([0.1, 3])
+      .on("zoom", (event) => g.attr("transform", event.transform));
 
     svg.call(zoom);
 
-    // --- Layout Logic ---
-    // Simple layering algorithm since we want explicit waves
-    // 1. Identify Roots (in-degree 0)
-    // 2. BFS to assign levels
-    const adjacency: Record<string, string[]> = {};
-    const inDegree: Record<string, number> = {};
-    nodes.forEach(n => {
-      adjacency[n.id] = [];
-      inDegree[n.id] = 0;
-    });
+    // 5. Force Simulation with Level Constraints
+    const nodeWidth = 180;
+    const nodeHeight = 60;
 
-    links.forEach(l => {
-        if(adjacency[l.source]) adjacency[l.source].push(l.target);
-        if(inDegree[l.target] !== undefined) inDegree[l.target]++;
-    });
+    const simulation = d3.forceSimulation(graphNodes)
+        .force("link", d3.forceLink(graphLinks).id((d: any) => d.id).distance(100))
+        .force("charge", d3.forceManyBody().strength(-800)) // Spread horizontally
+        .force("collide", d3.forceCollide().radius(nodeWidth / 2 + 20).iterations(2)) // Prevent overlap
+        .force("y", d3.forceY((d: any) => {
+            // Constraint: Y position depends strictly on level
+            const lvl = levels.get(d.id) || 0;
+            return 80 + lvl * levelHeight;
+        }).strength(3)) // Strong strength to enforce layers
+        .force("x", d3.forceX(width / 2).strength(0.1)); // Gentle centering
 
-    const levels: Record<string, number> = {};
-    const queue: {id: string, depth: number}[] = [];
-    
-    // Initialize queue with roots or nodes with no incoming links
-    nodes.forEach(n => {
-        if (inDegree[n.id] === 0) {
-            queue.push({ id: n.id, depth: 0 });
-            levels[n.id] = 0;
-        }
-    });
+    // Run simulation synchronously to pre-calculate layout (avoids animation on load)
+    simulation.tick(300); 
 
-    // If cycle or no roots, pick first node
-    if (queue.length === 0 && nodes.length > 0) {
-        queue.push({ id: nodes[0].id, depth: 0 });
-        levels[nodes[0].id] = 0;
-    }
-
-    while(queue.length > 0) {
-        const {id, depth} = queue.shift()!;
-        if (adjacency[id]) {
-            adjacency[id].forEach(target => {
-                // If not visited or we found a longer path (standard for layering often uses longest path, 
-                // but simple BFS is safest to avoid infinite loops in cycles if we track visited)
-                if (levels[target] === undefined) {
-                    levels[target] = depth + 1;
-                    queue.push({ id: target, depth: depth + 1 });
-                }
-            });
-        }
-    }
-
-    // Group by level
-    const nodesByLevel: GraphNode[][] = [];
-    nodes.forEach(n => {
-        const lvl = levels[n.id] !== undefined ? levels[n.id] : 0;
-        if (!nodesByLevel[lvl]) nodesByLevel[lvl] = [];
-        nodesByLevel[lvl].push(n);
-    });
-
-    // Assign X, Y coordinates
-    const nodePositions: Record<string, {x: number, y: number}> = {};
-    const maxLevel = nodesByLevel.length;
-    
-    // Center alignment
-    nodesByLevel.forEach((levelNodes, lvl) => {
-        const levelWidth = levelNodes.length * (nodeWidth + 40);
-        const startX = (width - levelWidth) / 2;
-        
-        levelNodes.forEach((node, i) => {
-            nodePositions[node.id] = {
-                x: startX + i * (nodeWidth + 40) + nodeWidth/2, // center of node
-                y: 80 + lvl * layerSpacing
-            };
-        });
-    });
-
-    // --- Drawing ---
-
-    // Define arrow markers
+    // 6. Draw Links
+    // Define Arrow Markers
     const defs = svg.append("defs");
-    
-    const types = ['Origin', 'Amplifier', 'Debunker', 'Source'];
-    const colors = {
-        'Origin': '#ef4444',    // Red-500
+    const roles = ['Origin', 'Amplifier', 'Debunker', 'Source'];
+    const colors: Record<string, string> = {
+        'Origin': '#ef4444',    // Red
         'Amplifier': '#f5c14b', // Yellow/Orange
-        'Debunker': '#22c55e',  // Green-500
-        'Source': '#3b82f6',    // Blue-500
+        'Debunker': '#22c55e',  // Green
+        'Source': '#3b82f6',    // Blue
     };
 
-    types.forEach(type => {
-        const color = colors[type as keyof typeof colors] || '#9ca3af';
+    roles.forEach(role => {
         defs.append("marker")
-            .attr("id", `arrow-${type}`)
+            .attr("id", `arrow-${role}`)
             .attr("viewBox", "0 -5 10 10")
-            .attr("refX", nodeWidth / 2 + 10) // offset to end at node edge
+            .attr("refX", nodeWidth / 2 + 8) // End exactly at node border
             .attr("refY", 0)
             .attr("markerWidth", 6)
             .attr("markerHeight", 6)
             .attr("orient", "auto")
             .append("path")
             .attr("d", "M0,-5L10,0L0,5")
-            .attr("fill", color)
+            .attr("fill", colors[role] || '#888')
             .style("opacity", 0.6);
     });
 
-    // Draw Links
     const linkSelection = g.append("g")
         .selectAll("path")
-        .data(links)
+        .data(graphLinks)
         .join("path")
-        .attr("d", d => {
-            const start = nodePositions[d.source] || {x:0, y:0};
-            const end = nodePositions[d.target] || {x:0, y:0};
-            
-            // Curved path
-            const path = d3.path();
-            path.moveTo(start.x, start.y + nodeHeight/2);
-            path.bezierCurveTo(
-                start.x, start.y + nodeHeight/2 + 50,
-                end.x, end.y - nodeHeight/2 - 50,
-                end.x, end.y - nodeHeight/2
-            );
-            return path.toString();
+        .attr("d", (d: any) => {
+             // Curved paths (Beziers)
+             const path = d3.path();
+             path.moveTo(d.source.x, d.source.y + nodeHeight / 2);
+             path.bezierCurveTo(
+                 d.source.x, d.source.y + nodeHeight / 2 + 50,
+                 d.target.x, d.target.y - nodeHeight / 2 - 50,
+                 d.target.x, d.target.y - nodeHeight / 2
+             );
+             return path.toString();
         })
         .attr("fill", "none")
-        .attr("stroke", d => {
-            const sourceNode = nodes.find(n => n.id === d.source);
-            return colors[sourceNode?.type as keyof typeof colors] || '#6b7280';
-        })
+        .attr("stroke", (d: any) => colors[d.source.type] || '#555')
         .attr("stroke-width", 2)
-        .attr("marker-end", d => {
-            const sourceNode = nodes.find(n => n.id === d.source);
-            return `url(#arrow-${sourceNode?.type})`;
-        })
+        .attr("marker-end", (d: any) => `url(#arrow-${d.source.type})`)
         .style("opacity", 0.4)
         .style("transition", "opacity 0.2s, stroke-width 0.2s");
 
-    // Draw Nodes
-    const nodeGroup = g.append("g")
+    // 7. Draw Nodes
+    const nodeSelection = g.append("g")
         .selectAll("g")
-        .data(nodes)
+        .data(graphNodes)
         .join("g")
-        .attr("transform", d => {
-            const pos = nodePositions[d.id] || {x:0, y:0};
-            return `translate(${pos.x - nodeWidth/2}, ${pos.y - nodeHeight/2})`;
-        })
+        .attr("transform", d => `translate(${d.x}, ${d.y})`)
         .style("cursor", "pointer")
         .on("mouseenter", (event, d) => {
-            setHoveredNode(d);
+            const rawNode = nodes.find(n => n.id === d.id) || d;
+            setHoveredNode(rawNode as GraphNode);
             
-            // Highlight connected links
-            linkSelection.style("opacity", l => 
-                l.source === d.id || l.target === d.id ? 1 : 0.1
-            )
-            .attr("stroke-width", l => 
-                l.source === d.id || l.target === d.id ? 3 : 1
+            // Highlight connections
+            linkSelection.style("opacity", (l: any) => 
+                l.source.id === d.id || l.target.id === d.id ? 1 : 0.05
+            ).attr("stroke-width", (l: any) => 
+                l.source.id === d.id || l.target.id === d.id ? 3 : 1
             );
-
-            // Dim other nodes
-            nodeGroup.style("opacity", n => 
+            
+            nodeSelection.style("opacity", (n: any) => 
                 n.id === d.id || 
-                links.some(l => (l.source === d.id && l.target === n.id) || (l.source === n.id && l.target === d.id))
+                graphLinks.some((l: any) => (l.source.id === d.id && l.target.id === n.id) || (l.source.id === n.id && l.target.id === d.id))
                 ? 1 : 0.2
             );
         })
         .on("mouseleave", () => {
             setHoveredNode(null);
             linkSelection.style("opacity", 0.4).attr("stroke-width", 2);
-            nodeGroup.style("opacity", 1);
+            nodeSelection.style("opacity", 1);
         })
         .on("click", (event, d) => {
-             // Center zoom on node
-             const pos = nodePositions[d.id];
-             if(pos) {
-                svg.transition().duration(750).call(
-                    zoom.transform,
-                    d3.zoomIdentity.translate(width/2, height/2).scale(1.2).translate(-pos.x, -pos.y)
-                );
-             }
+            // Smooth center zoom on click
+            svg.transition().duration(750).call(
+                zoom.transform,
+                d3.zoomIdentity.translate(width/2, height/2).scale(1.2).translate(-d.x!, -d.y!)
+            );
         });
 
-    // Node Rect
-    nodeGroup.append("rect")
+    // Card styling
+    nodeSelection.append("rect")
+        .attr("x", -nodeWidth / 2)
+        .attr("y", -nodeHeight / 2)
         .attr("width", nodeWidth)
         .attr("height", nodeHeight)
-        .attr("rx", 8)
+        .attr("rx", 6)
         .attr("fill", "#050509")
-        .attr("stroke", d => colors[d.type as keyof typeof colors] || '#6b7280')
+        .attr("stroke", d => colors[d.type] || '#555')
         .attr("stroke-width", 2)
-        .style("filter", d => `drop-shadow(0 0 8px ${colors[d.type as keyof typeof colors]}40)`);
+        .style("filter", d => `drop-shadow(0 0 10px ${colors[d.type]}20)`);
 
-    // Node Role Label (Badge)
-    nodeGroup.append("rect")
-        .attr("x", 10)
-        .attr("y", -10)
-        .attr("width", d => d.type.length * 8 + 10)
+    // Role Badge
+    nodeSelection.append("rect")
+        .attr("x", -nodeWidth / 2 + 10)
+        .attr("y", -nodeHeight / 2 - 10)
+        .attr("width", d => d.type.length * 7 + 12)
         .attr("height", 20)
         .attr("rx", 4)
         .attr("fill", "#0a0b10")
-        .attr("stroke", d => colors[d.type as keyof typeof colors] || '#6b7280')
+        .attr("stroke", d => colors[d.type] || '#555')
         .attr("stroke-width", 1);
 
-    nodeGroup.append("text")
-        .attr("x", 15)
-        .attr("y", 4)
+    nodeSelection.append("text")
+        .attr("x", -nodeWidth / 2 + 16)
+        .attr("y", -nodeHeight / 2 + 3)
         .text(d => d.type.toUpperCase())
-        .attr("font-size", "10px")
-        .attr("font-weight", "bold")
-        .attr("fill", d => colors[d.type as keyof typeof colors] || '#6b7280');
+        .attr("fill", d => colors[d.type] || '#ccc')
+        .attr("font-size", "9px")
+        .attr("font-weight", "bold");
 
-    // Node Label
-    nodeGroup.append("text")
-        .attr("x", nodeWidth / 2)
-        .attr("y", nodeHeight / 2 + 5)
+    // Label
+    nodeSelection.append("text")
         .attr("text-anchor", "middle")
-        .text(d => d.label.length > 20 ? d.label.substring(0, 18) + "..." : d.label)
-        .attr("fill", "#f3f4f6")
-        .attr("font-size", "12px")
+        .attr("dy", "0.3em")
+        .text(d => d.label.length > 22 ? d.label.substring(0, 20) + "..." : d.label)
+        .attr("fill", "#eee")
+        .attr("font-size", "11px")
         .attr("font-weight", "500")
         .style("pointer-events", "none");
 
   }, [nodes, links]);
 
   return (
-    <div ref={containerRef} className="w-full h-[500px] border border-white/10 rounded-xl overflow-hidden relative bg-[#0a0b10]">
+    <div ref={containerRef} className="w-full border border-white/10 rounded-xl overflow-hidden relative bg-[#0a0b10]" style={{ height: '500px' }}>
       <svg ref={svgRef} className="w-full h-full block" />
       
-      {/* Legend / Controls Overlay */}
+      {/* Legend Overlay */}
       <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
-         <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm p-2 rounded-lg border border-white/10">
-            <span className="w-3 h-3 rounded-full bg-red-500"></span> <span className="text-xs text-gray-300">Origin</span>
-         </div>
-         <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm p-2 rounded-lg border border-white/10">
-            <span className="w-3 h-3 rounded-full bg-[#f5c14b]"></span> <span className="text-xs text-gray-300">Amplifier</span>
-         </div>
-         <div className="flex items-center gap-2 bg-black/50 backdrop-blur-sm p-2 rounded-lg border border-white/10">
-            <span className="w-3 h-3 rounded-full bg-green-500"></span> <span className="text-xs text-gray-300">Debunker</span>
-         </div>
+         {['Origin', 'Amplifier', 'Debunker'].map(role => (
+             <div key={role} className="flex items-center gap-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded border border-white/5">
+                <span className={`w-2 h-2 rounded-full ${role === 'Origin' ? 'bg-red-500' : role === 'Amplifier' ? 'bg-[#f5c14b]' : 'bg-green-500'}`}></span>
+                <span className="text-[10px] uppercase text-gray-300">{role}</span>
+             </div>
+         ))}
       </div>
 
-      <div className="absolute bottom-4 right-4 text-xs text-gray-500 pointer-events-none">
-         Scroll to zoom • Drag to pan • Click to focus
+      <div className="absolute bottom-4 right-4 text-[10px] text-gray-600 pointer-events-none">
+         Scroll to Zoom • Drag to Pan
       </div>
 
+      {/* Tooltip */}
       {hoveredNode && (
-          <div className="absolute bottom-4 left-4 bg-black/80 backdrop-blur-md border border-white/20 p-4 rounded-lg max-w-xs pointer-events-none animate-fade-in">
-              <h4 className="text-[#f5c14b] font-bold mb-1">{hoveredNode.label}</h4>
-              <span className={`text-xs font-mono px-2 py-0.5 rounded border 
-                ${hoveredNode.type === 'Origin' ? 'border-red-500 text-red-400 bg-red-900/20' : 
-                  hoveredNode.type === 'Amplifier' ? 'border-yellow-500 text-yellow-400 bg-yellow-900/20' : 
-                  'border-green-500 text-green-400 bg-green-900/20'}`}>
+          <div className="absolute bottom-4 left-4 bg-black/90 backdrop-blur-md border border-white/20 p-3 rounded-lg max-w-xs pointer-events-none animate-fade-in shadow-xl">
+              <h4 className="text-white font-bold text-sm mb-1">{hoveredNode.label}</h4>
+              <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border 
+                ${hoveredNode.type === 'Origin' ? 'border-red-500 text-red-400 bg-red-900/30' : 
+                  hoveredNode.type === 'Amplifier' ? 'border-yellow-500 text-yellow-400 bg-yellow-900/30' : 
+                  'border-green-500 text-green-400 bg-green-900/30'}`}>
                   {hoveredNode.type.toUpperCase()}
               </span>
           </div>

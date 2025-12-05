@@ -1,6 +1,7 @@
 import React from 'react';
 import type { ScamAnalysis } from '../types';
 import Feedback from './Feedback';
+import TextToSpeechButton from './TextToSpeechButton';
 
 const Section: React.FC<{ title: string, children: React.ReactNode }> = ({ title, children }) => (
   <div className="mb-6 last:mb-0">
@@ -40,9 +41,13 @@ const ScamAnalysisResult: React.FC<{ result: ScamAnalysis }> = ({ result }) => {
         <ConfidenceBar score={result.confidenceScore} colorClass={verdictStyles.bg.includes('green') ? 'bg-green-500' : verdictStyles.bg.includes('red') ? 'bg-red-500' : 'bg-yellow-500'} />
       </Section>
 
-      <Section title="Summary">
-        <p className="text-gray-300 text-base leading-relaxed">{result.summary}</p>
-      </Section>
+      <div className="mb-6 last:mb-0">
+         <div className="flex items-center justify-between mb-3">
+            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider">Summary</h2>
+            <TextToSpeechButton text={result.summary} />
+         </div>
+         <p className="text-gray-300 text-base leading-relaxed">{result.summary}</p>
+      </div>
       
       {result.identifiedTactics.length > 0 && (
         <Section title="Identified Red Flags">
