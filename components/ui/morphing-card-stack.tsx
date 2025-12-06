@@ -19,6 +19,7 @@ export interface MorphingCardStackProps {
   cards?: CardData[]
   className?: string
   defaultLayout?: LayoutMode
+  showToggle?: boolean
   onCardClick?: (card: CardData) => void
 }
 
@@ -34,6 +35,7 @@ export function Component({
   cards = [],
   className,
   defaultLayout = "stack",
+  showToggle = true,
   onCardClick,
 }: MorphingCardStackProps) {
   const [layout, setLayout] = useState<LayoutMode>(defaultLayout)
@@ -114,26 +116,28 @@ export function Component({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Layout Toggle */}
-      <div className="flex items-center justify-center gap-1 rounded-lg bg-white/5 p-1 w-fit mx-auto mb-8 border border-white/10">
-        {(Object.keys(layoutIcons) as LayoutMode[]).map((mode) => {
-          const Icon = layoutIcons[mode]
-          return (
-            <button
-              key={mode}
-              onClick={() => setLayout(mode)}
-              className={cn(
-                "rounded-md p-2 transition-all",
-                layout === mode
-                  ? "bg-[#f5c14b] text-black shadow-lg"
-                  : "text-gray-400 hover:text-white hover:bg-white/10",
-              )}
-              aria-label={`Switch to ${mode} layout`}
-            >
-              <Icon className="h-4 w-4" />
-            </button>
-          )
-        })}
-      </div>
+      {showToggle && (
+        <div className="flex items-center justify-center gap-1 rounded-lg bg-white/5 p-1 w-fit mx-auto mb-8 border border-white/10">
+          {(Object.keys(layoutIcons) as LayoutMode[]).map((mode) => {
+            const Icon = layoutIcons[mode]
+            return (
+              <button
+                key={mode}
+                onClick={() => setLayout(mode)}
+                className={cn(
+                  "rounded-md p-2 transition-all",
+                  layout === mode
+                    ? "bg-[#f5c14b] text-black shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10",
+                )}
+                aria-label={`Switch to ${mode} layout`}
+              >
+                <Icon className="h-4 w-4" />
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {/* Cards Container */}
       <LayoutGroup>

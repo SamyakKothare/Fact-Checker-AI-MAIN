@@ -1,7 +1,7 @@
 import React from 'react';
 import Footer from './Footer';
 import { Component as MorphingCardStack, CardData } from './ui/morphing-card-stack';
-import { ScanSearch, ShieldAlert, GitGraph, BrainCircuit } from 'lucide-react';
+import { ScanSearch, ShieldAlert, GitGraph, BrainCircuit, HelpCircle, FileAudio, Database } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -47,6 +47,37 @@ const featuresData: CardData[] = [
     description: "Look deeper than the facts. Detect logical fallacies, emotional manipulation, and rhetorical tricks in political speeches, articles, or debates.",
     icon: <BrainCircuit className="w-6 h-6" />,
     color: "#a855f7" // Purple
+  }
+];
+
+const faqData: CardData[] = [
+  {
+    id: "faq-1",
+    title: "Is it free to use?",
+    description: "Yes, Fact Checker AI leverages the Gemini API to provide free, high-quality analysis for researchers, students, and the general public.",
+    icon: <HelpCircle className="w-6 h-6" />,
+    color: "#3b82f6"
+  },
+  {
+    id: "faq-2",
+    title: "How does the Scam Detector work?",
+    description: "It analyzes the language patterns in messages for red flags like artificial urgency, requests for personal info, and known scam scripts.",
+    icon: <ShieldAlert className="w-6 h-6" />,
+    color: "#ef4444"
+  },
+  {
+    id: "faq-3",
+    title: "Can I analyze audio or images?",
+    description: "Absolutely. You can upload images to check for AI manipulation or record audio to verify spoken claims directly through the browser.",
+    icon: <FileAudio className="w-6 h-6" />,
+    color: "#eab308"
+  },
+  {
+    id: "faq-4",
+    title: "What data do you store?",
+    description: "We prioritize user privacy. Your queries and uploads are processed in real-time for analysis and are not permanently stored on our servers.",
+    icon: <Database className="w-6 h-6" />,
+    color: "#a855f7"
   }
 ];
 
@@ -104,22 +135,14 @@ const LandingPage: React.FC<LandingPageProps> = ({
               <p className="lp-hero-note">No installation required. Works in any modern browser.</p>
             </div>
             <div className="lp-hero-media">
-              <div className="lp-hero-card relative overflow-hidden flex flex-col items-center justify-center p-8 text-center bg-gray-900 border border-gray-800 rounded-2xl">
-                 <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-transparent to-purple-900/20 pointer-events-none"></div>
-                 <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjEiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L3N2Zz4=')] [mask-image:linear-gradient(to_bottom,white,transparent)]"></div>
-                 
-                 <div className="relative z-10 flex gap-4 items-end mb-6 h-24">
-                    <div className="w-3 bg-blue-500/60 rounded-t-sm animate-[pulse_2s_ease-in-out_infinite]" style={{height: '60%'}}></div>
-                    <div className="w-3 bg-indigo-500/60 rounded-t-sm animate-[pulse_3s_ease-in-out_infinite]" style={{height: '85%'}}></div>
-                    <div className="w-3 bg-[#f5c14b]/80 rounded-t-sm animate-[pulse_1.5s_ease-in-out_infinite]" style={{height: '100%', boxShadow: '0 0 15px rgba(245, 193, 75, 0.4)'}}></div>
-                    <div className="w-3 bg-purple-500/60 rounded-t-sm animate-[pulse_2.5s_ease-in-out_infinite]" style={{height: '45%'}}></div>
-                    <div className="w-3 bg-pink-500/60 rounded-t-sm animate-[pulse_2s_ease-in-out_infinite]" style={{height: '70%'}}></div>
-                 </div>
-                 
-                 <div className="relative z-10 bg-black/40 backdrop-blur-md px-6 py-3 rounded-full border border-white/10 flex items-center gap-3">
-                    <div className="w-2 h-2 bg-[#f5c14b] rounded-full animate-ping"></div>
-                    <span className="text-xs font-mono text-gray-300 tracking-wider">AI ANALYSIS ACTIVE</span>
-                 </div>
+               <div className="flex flex-col items-center justify-center w-full">
+                <h3 className="text-sm font-bold text-[#f5c14b] mb-8 tracking-widest text-center uppercase">Our Top Features</h3>
+                <MorphingCardStack 
+                  cards={featuresData} 
+                  defaultLayout="stack"
+                  showToggle={false}
+                  className="w-full flex flex-col items-center"
+                />
               </div>
             </div>
           </div>
@@ -181,24 +204,11 @@ const LandingPage: React.FC<LandingPageProps> = ({
         <section id="faq" className="lp-faq">
           <div className="lp-container">
             <h2>Frequently asked questions</h2>
-            <div className="lp-faq-grid">
-              <div className="lp-faq-item">
-                <h3>Is it free to use?</h3>
-                <p>Yes, Fact Checker AI leverages the Gemini API to provide free, high-quality analysis for researchers, students, and the general public.</p>
-              </div>
-              <div className="lp-faq-item">
-                <h3>How does the Scam Detector work?</h3>
-                <p>It analyzes the language patterns in messages for red flags like artificial urgency, requests for personal info, and known scam scripts.</p>
-              </div>
-              <div className="lp-faq-item">
-                <h3>Can I analyze audio or images?</h3>
-                <p>Absolutely. You can upload images to check for AI manipulation or record audio to verify spoken claims directly through the browser.</p>
-              </div>
-              <div className="lp-faq-item">
-                <h3>What data do you store?</h3>
-                <p>We prioritize user privacy. Your queries and uploads are processed in real-time for analysis and are not permanently stored on our servers.</p>
-              </div>
-            </div>
+            <MorphingCardStack 
+              cards={faqData} 
+              defaultLayout="grid"
+              className="py-4"
+            />
           </div>
         </section>
 
