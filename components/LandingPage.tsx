@@ -135,31 +135,14 @@ const LandingPage: React.FC<LandingPageProps> = ({
               <p className="lp-hero-note">No installation required. Works in any modern browser.</p>
             </div>
             <div className="lp-hero-media">
-               <div className="relative w-full max-w-md aspect-[4/3] md:aspect-square lg:aspect-[4/3] bg-[#0c0d16] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center justify-center p-8 mx-auto">
-                  {/* Abstract UI Elements - Dashboard Visualization */}
-                  <div className="w-full h-full flex items-end justify-center gap-4 pb-12">
-                      <div className="w-8 bg-blue-500/20 h-[40%] rounded-t-lg animate-pulse" style={{ animationDelay: '0s' }}></div>
-                      <div className="w-8 bg-purple-500/20 h-[70%] rounded-t-lg animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                      <div className="w-8 bg-[#f5c14b] h-[100%] rounded-t-lg shadow-[0_0_20px_rgba(245,193,75,0.3)] relative group">
-                          <div className="absolute -top-10 left-1/2 -translate-x-1/2 bg-white/10 px-2 py-1 rounded text-xs text-[#f5c14b] opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                            98% Confidence
-                          </div>
-                      </div>
-                      <div className="w-8 bg-indigo-500/20 h-[60%] rounded-t-lg animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                      <div className="w-8 bg-pink-500/20 h-[80%] rounded-t-lg animate-pulse" style={{ animationDelay: '0.1s' }}></div>
-                  </div>
-                  
-                  <div className="absolute bottom-8 px-6 py-2 bg-white/5 backdrop-blur-md border border-white/10 rounded-full flex items-center gap-3">
-                      <span className="relative flex h-3 w-3">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f5c14b] opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-3 w-3 bg-[#f5c14b]"></span>
-                      </span>
-                      <span className="text-xs font-mono font-bold tracking-widest text-gray-300">AI ANALYSIS ACTIVE</span>
-                  </div>
-                  
-                  {/* Background Grid */}
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none"></div>
-               </div>
+               <div className="flex flex-col items-center justify-center w-full">
+                <MorphingCardStack 
+                  cards={featuresData} 
+                  defaultLayout="stack"
+                  showToggle={false}
+                  className="w-full flex flex-col items-center"
+                />
+              </div>
             </div>
           </div>
         </section>
