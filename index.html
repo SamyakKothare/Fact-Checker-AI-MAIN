@@ -12,7 +12,11 @@
     "react/": "https://aistudiocdn.com/react@^19.2.0/",
     "react": "https://aistudiocdn.com/react@^19.2.0",
     "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
-    "d3": "https://esm.sh/d3@7"
+    "d3": "https://esm.sh/d3@7?external=react,react-dom",
+    "framer-motion": "https://esm.sh/framer-motion@11.11.17?external=react,react-dom",
+    "lucide-react": "https://esm.sh/lucide-react@0.460.0?external=react,react-dom",
+    "clsx": "https://esm.sh/clsx@2.1.1",
+    "tailwind-merge": "https://esm.sh/tailwind-merge@2.5.4"
   }
 }
 </script>
@@ -552,15 +556,13 @@
         color: var(--text-muted);
       }
 
-      /* Features & FAQ Grids - Responsive Logic */
-      .lp-feature-grid, 
+      /* FAQ Grids */
       .lp-faq-grid {
         display: flex;
         flex-direction: column;
         gap: 1.5rem;
       }
 
-      .lp-feature-card, 
       .lp-faq-item {
         background: #0c0d16;
         border-radius: var(--radius-sm);
@@ -572,7 +574,6 @@
         transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, opacity 0.3s ease;
       }
 
-      .lp-feature-card h3,
       .lp-faq-item h3 {
         margin-top: 0;
         margin-bottom: 0.75rem;
@@ -581,22 +582,17 @@
         transition: color 0.3s ease;
       }
 
-      .lp-feature-card p,
       .lp-faq-item p {
         margin: 0;
         color: var(--text-muted);
         transition: color 0.3s ease;
       }
 
-      /* Grid Hover Spotlight Effect */
-      /* Fade other items when container is hovered */
-      .lp-feature-grid:hover .lp-feature-card,
+      /* Grid Hover Spotlight Effect - FAQ only now */
       .lp-faq-grid:hover .lp-faq-item {
         opacity: 0.5;
       }
 
-      /* Highlight the hovered item */
-      .lp-feature-card:hover, 
       .lp-faq-item:hover {
         transform: translateY(-4px);
         border-color: rgba(255, 255, 255, 0.4);
@@ -604,9 +600,6 @@
         opacity: 1 !important;
       }
 
-      /* Brighten text of hovered item to pure white */
-      .lp-feature-card:hover h3, 
-      .lp-feature-card:hover p,
       .lp-faq-item:hover h3,
       .lp-faq-item:hover p {
         color: #ffffff;
@@ -614,13 +607,11 @@
 
       /* Desktop Layout */
       @media (min-width: 900px) {
-        .lp-feature-grid, 
         .lp-faq-grid {
           flex-direction: row;
           align-items: stretch;
         }
 
-        .lp-feature-card, 
         .lp-faq-item {
           flex: 1;
         }

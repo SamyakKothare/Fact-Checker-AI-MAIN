@@ -1,5 +1,7 @@
 import React from 'react';
 import Footer from './Footer';
+import { Component as MorphingCardStack, CardData } from './ui/morphing-card-stack';
+import { ScanSearch, ShieldAlert, GitGraph, BrainCircuit } from 'lucide-react';
 
 interface LandingPageProps {
   onStart: () => void;
@@ -16,6 +18,37 @@ interface LandingPageProps {
   onPrivacyClick: () => void;
   onTermsClick: () => void;
 }
+
+const featuresData: CardData[] = [
+  {
+    id: "1",
+    title: "Multi-Modal Verification",
+    description: "Cross-reference text, verify spoken audio, and analyze images for manipulation against trusted global databases like NASA, ISRO, and Wikipedia.",
+    icon: <ScanSearch className="w-6 h-6" />,
+    color: "#3b82f6" // Blue
+  },
+  {
+    id: "2",
+    title: "Scam Detector",
+    description: "Stay safe from fraud. Analyze suspicious emails, messages, or offers to identify phishing attempts, urgency tactics, and financial scams instantly.",
+    icon: <ShieldAlert className="w-6 h-6" />,
+    color: "#ef4444" // Red
+  },
+  {
+    id: "3",
+    title: "Source Tracing",
+    description: "Don't just verify facts; understand their journey. Visualize how claims spread from their origin node through amplifiers to the wider web.",
+    icon: <GitGraph className="w-6 h-6" />,
+    color: "#eab308" // Yellow/Gold
+  },
+  {
+    id: "4",
+    title: "Rhetoric & Logic Analysis",
+    description: "Look deeper than the facts. Detect logical fallacies, emotional manipulation, and rhetorical tricks in political speeches, articles, or debates.",
+    icon: <BrainCircuit className="w-6 h-6" />,
+    color: "#a855f7" // Purple
+  }
+];
 
 const LandingPage: React.FC<LandingPageProps> = ({ 
     onStart, 
@@ -99,24 +132,13 @@ const LandingPage: React.FC<LandingPageProps> = ({
               <h2>Advanced Tools for Digital Truth</h2>
               <p>A complete suite of analysis tools designed to combat misinformation, fraud, and manipulation.</p>
             </div>
-            <div className="lp-feature-grid">
-              <article className="lp-feature-card">
-                <h3>🔍 Multi-Modal Verification</h3>
-                <p>Cross-reference text, verify spoken audio, and analyze images for manipulation against trusted global databases like NASA, ISRO, and Wikipedia.</p>
-              </article>
-              <article className="lp-feature-card">
-                <h3>🛡️ Scam Detector</h3>
-                <p>Stay safe from fraud. Analyze suspicious emails, messages, or offers to identify phishing attempts, urgency tactics, and financial scams instantly.</p>
-              </article>
-              <article className="lp-feature-card">
-                <h3>🕸️ Source Tracing</h3>
-                <p>Don't just verify facts; understand their journey. Visualize how claims spread from their origin node through amplifiers to the wider web.</p>
-              </article>
-              <article className="lp-feature-card">
-                <h3>🧠 Rhetoric & Logic Analysis</h3>
-                <p>Look deeper than the facts. Detect logical fallacies, emotional manipulation, and rhetorical tricks in political speeches, articles, or debates.</p>
-              </article>
-            </div>
+            
+            <MorphingCardStack 
+              cards={featuresData} 
+              defaultLayout="grid"
+              className="py-4"
+            />
+            
           </div>
         </section>
 
