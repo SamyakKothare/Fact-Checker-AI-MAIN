@@ -106,6 +106,21 @@ const LandingPage: React.FC<LandingPageProps> = ({
 
   return (
     <div className="landing-page-theme">
+      {/* Animation Keyframes */}
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes bar-1 { 0%, 100% { height: 40%; } 50% { height: 70%; } }
+        @keyframes bar-2 { 0%, 100% { height: 65%; } 50% { height: 35%; } }
+        @keyframes bar-3 { 0%, 100% { height: 85%; } 50% { height: 50%; } }
+        @keyframes bar-4 { 0%, 100% { height: 50%; } 50% { height: 80%; } }
+        @keyframes bar-5 { 0%, 100% { height: 70%; } 50% { height: 40%; } }
+        
+        .animate-bar-1 { animation: bar-1 2s ease-in-out infinite; }
+        .animate-bar-2 { animation: bar-2 2.2s ease-in-out infinite; }
+        .animate-bar-3 { animation: bar-3 1.8s ease-in-out infinite; }
+        .animate-bar-4 { animation: bar-4 2.4s ease-in-out infinite; }
+        .animate-bar-5 { animation: bar-5 2.1s ease-in-out infinite; }
+      `}} />
+
       <header className="lp-site-header">
         <div className="lp-container lp-header-inner">
           <div className="lp-logo">FACT CHECKER-AI</div>
@@ -140,21 +155,21 @@ const LandingPage: React.FC<LandingPageProps> = ({
                   <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-40"></div>
                   
                   {/* Bars Container */}
-                  <div className="relative z-10 flex items-end justify-center gap-5 h-24 mb-10 w-full">
+                  <div className="relative z-10 flex items-end justify-center gap-5 h-32 mb-8 w-full">
                       {/* Bar 1 */}
-                      <div className="w-4 bg-[#3b82f6] rounded-t-sm h-[40%] opacity-90 animate-pulse" style={{ animationDelay: '0s', animationDuration: '2s' }}></div>
+                      <div className="w-5 bg-[#3b82f6] rounded-t-md opacity-90 animate-bar-1 shadow-[0_0_15px_rgba(59,130,246,0.3)]"></div>
                       {/* Bar 2 */}
-                      <div className="w-4 bg-[#6366f1] rounded-t-sm h-[65%] opacity-90 animate-pulse" style={{ animationDelay: '0.3s', animationDuration: '2.5s' }}></div>
+                      <div className="w-5 bg-[#6366f1] rounded-t-md opacity-90 animate-bar-2 shadow-[0_0_15px_rgba(99,102,241,0.3)]"></div>
                       {/* Bar 3 (Center/Active) */}
-                      <div className="w-4 bg-[#f5c14b] rounded-t-sm h-[85%] shadow-[0_0_20px_rgba(245,193,75,0.4)] animate-pulse" style={{ animationDelay: '0s', animationDuration: '3s' }}></div>
+                      <div className="w-5 bg-[#f5c14b] rounded-t-md shadow-[0_0_25px_rgba(245,193,75,0.5)] animate-bar-3"></div>
                       {/* Bar 4 */}
-                      <div className="w-4 bg-[#8b5cf6] rounded-t-sm h-[50%] opacity-90 animate-pulse" style={{ animationDelay: '0.2s', animationDuration: '2.2s' }}></div>
+                      <div className="w-5 bg-[#8b5cf6] rounded-t-md opacity-90 animate-bar-4 shadow-[0_0_15px_rgba(139,92,246,0.3)]"></div>
                       {/* Bar 5 */}
-                      <div className="w-4 bg-[#d946ef] rounded-t-sm h-[70%] opacity-90 animate-pulse" style={{ animationDelay: '0.4s', animationDuration: '2.8s' }}></div>
+                      <div className="w-5 bg-[#d946ef] rounded-t-md opacity-90 animate-bar-5 shadow-[0_0_15px_rgba(217,70,239,0.3)]"></div>
                   </div>
 
                   {/* Pill Status */}
-                  <div className="relative z-10 px-5 py-2.5 bg-[#151621] border border-white/10 rounded-full flex items-center gap-3 shadow-lg">
+                  <div className="relative z-10 px-5 py-2.5 bg-[#151621] border border-white/10 rounded-full flex items-center gap-3 shadow-lg backdrop-blur-sm">
                       <div className="relative flex h-2.5 w-2.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f5c14b] opacity-75"></span>
                           <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#f5c14b]"></span>
