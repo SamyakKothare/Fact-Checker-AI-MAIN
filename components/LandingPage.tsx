@@ -135,26 +135,31 @@ const LandingPage: React.FC<LandingPageProps> = ({
               <p className="lp-hero-note">No installation required. Works in any modern browser.</p>
             </div>
             <div className="lp-hero-media">
-               <div className="relative w-full max-w-[500px] aspect-video bg-[#0c0d16] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center justify-center p-8 mx-auto hover:shadow-yellow-500/10 transition-shadow duration-500">
+               <div className="relative w-full max-w-[480px] aspect-[16/10] bg-[#0c0d16] rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center justify-center p-8 mx-auto hover:shadow-yellow-500/10 transition-shadow duration-500">
                   {/* Dot Grid Background */}
-                  <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none opacity-50"></div>
+                  <div className="absolute inset-0 bg-[radial-gradient(#ffffff15_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none opacity-40"></div>
                   
-                  {/* Bars */}
-                  <div className="relative z-10 w-full flex items-end justify-center gap-6 h-32 mb-10">
-                      <div className="w-5 bg-blue-700/80 rounded-t-sm h-[40%] animate-pulse" style={{ animationDelay: '0s', animationDuration: '2s' }}></div>
-                      <div className="w-5 bg-indigo-600/80 rounded-t-sm h-[65%] animate-pulse" style={{ animationDelay: '0.3s', animationDuration: '2.5s' }}></div>
-                      <div className="w-5 bg-[#f5c14b] rounded-t-sm h-[85%] shadow-[0_0_20px_rgba(245,193,75,0.3)] animate-pulse" style={{ animationDelay: '0s', animationDuration: '3s' }}></div>
-                      <div className="w-5 bg-purple-600/80 rounded-t-sm h-[50%] animate-pulse" style={{ animationDelay: '0.2s', animationDuration: '2.2s' }}></div>
-                      <div className="w-5 bg-pink-700/80 rounded-t-sm h-[70%] animate-pulse" style={{ animationDelay: '0.4s', animationDuration: '2.8s' }}></div>
+                  {/* Bars Container */}
+                  <div className="relative z-10 flex items-end justify-center gap-5 h-24 mb-10 w-full">
+                      {/* Bar 1 */}
+                      <div className="w-4 bg-[#3b82f6] rounded-t-sm h-[40%] opacity-90 animate-pulse" style={{ animationDelay: '0s', animationDuration: '2s' }}></div>
+                      {/* Bar 2 */}
+                      <div className="w-4 bg-[#6366f1] rounded-t-sm h-[65%] opacity-90 animate-pulse" style={{ animationDelay: '0.3s', animationDuration: '2.5s' }}></div>
+                      {/* Bar 3 (Center/Active) */}
+                      <div className="w-4 bg-[#f5c14b] rounded-t-sm h-[85%] shadow-[0_0_20px_rgba(245,193,75,0.4)] animate-pulse" style={{ animationDelay: '0s', animationDuration: '3s' }}></div>
+                      {/* Bar 4 */}
+                      <div className="w-4 bg-[#8b5cf6] rounded-t-sm h-[50%] opacity-90 animate-pulse" style={{ animationDelay: '0.2s', animationDuration: '2.2s' }}></div>
+                      {/* Bar 5 */}
+                      <div className="w-4 bg-[#d946ef] rounded-t-sm h-[70%] opacity-90 animate-pulse" style={{ animationDelay: '0.4s', animationDuration: '2.8s' }}></div>
                   </div>
 
-                  {/* Pill */}
-                  <div className="relative z-10 px-6 py-3 bg-[#050509] border border-white/10 rounded-full flex items-center gap-3 shadow-lg">
-                      <div className="relative flex h-2 w-2">
+                  {/* Pill Status */}
+                  <div className="relative z-10 px-5 py-2.5 bg-[#151621] border border-white/10 rounded-full flex items-center gap-3 shadow-lg">
+                      <div className="relative flex h-2.5 w-2.5">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#f5c14b] opacity-75"></span>
-                          <span className="relative inline-flex rounded-full h-2 w-2 bg-[#f5c14b]"></span>
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#f5c14b]"></span>
                       </div>
-                      <span className="text-[10px] font-mono font-medium tracking-[0.2em] text-gray-300 uppercase">AI Analysis Active</span>
+                      <span className="text-[10px] font-mono font-semibold tracking-[0.2em] text-gray-300 uppercase">AI Analysis Active</span>
                   </div>
                </div>
             </div>
